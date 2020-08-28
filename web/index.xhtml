@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Tienda App</title>
+    </h:head>
+    <h:body>
+        <p:growl id="msj"></p:growl>
+        <h:form id="frmNew">
+            <p:fieldset legend="Mantenimientos" toggleable="true">
+                <p:panelGrid columns="1">
+                    <p:commandButton value="NUEVO" oncomplete="PF('wgnew').show();"></p:commandButton>
+                </p:panelGrid>
+            </p:fieldset>
+        </h:form>
+        <p:dialog widgetVar="wgnew" modal="true" showEffect="clip" header="Nueva Orden" resizable="false">
+            <p:ajax event="close" listener="#{managerOrden.limpiarData()}"
+                                    update=":n"></p:ajax>
+            <h:form id="n">
+                <p:panelGrid columns="2">
+                    <p:outputLabel value="PRODUCTO: " id="txtProducto"></p:outputLabel>
+                    <p:selectOneMenu value="#{managerOrden.producto.id}">
+                        <f:selectItems value="#{managerProducto.listProductos}" var="p"
+                                       itemValue="#{p.id}" itemLabel="#{p.nombre}"></f:selectItems>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="CLIENTE: " id="txtCliente"></p:outputLabel>
+                    <p:selectOneMenu value="#{managerOrden.cliente.id}">
+                        <f:selectItems value="#{managerCliente.listCliente}" var="c"
+                                       itemValue="#{c.id}" itemLabel="#{c.nombres}"></f:selectItems>
+                    </p:selectOneMenu>
+                    <p:outputLabel value="CANTIDAD: " id="txtCant"></p:outputLabel>
+                    <p:inputText value="#{managerOrden.orden.cantidad}" type="number"></p:inputText>
+                    <p:outputLabel value="FECHA: " id="txtFecha"></p:outputLabel>
+                    <p:calendar value="#{managerOrden.orden.fecha}" pattern="dd/MM/yyyy" required="true" 
+                                requiredMessage="Campo es Requerido"></p:calendar>
+                    <f:facet name="footer">
+                        <p:commandButton value="GUARDAR" actionListener="#{managerOrden.botonGuardar()}" 
+                                         update=":frmOrden n :msj" oncomplete="PF('wgnew').hide();" rendered="#{managerOrden.orden.idOrden ==null}">                           
+                        </p:commandButton>
+                        <p:commandButton value="ACTUALIZAR" actionListener="#{managerOrden.actualizarOrden()}" 
+                                         update=":frmOrden n :msj" oncomplete="PF('wgnew').hide();" rendered="#{managerOrden.orden.idOrden !=null}">                           
+                        </p:commandButton>
+                    </f:facet>
+                </p:panelGrid>
+            </h:form>  
+        </p:dialog>
+        <h:form id="frmOrden">
+            <p:fieldset legend="Ordenes" toggleable="true">
+                <p:dataTable value="#{managerOrden.listOrden}" var="item">
+                    <p:column headerText="Id Orden">
+                        <h:outputText value="#{item.idOrden}"></h:outputText>
+                    </p:column>
+                    <p:column headerText="Fecha">
+                        <h:outputText value="#{item.fecha}">
+                            <f:convertDateTime pattern="dd/MM/YYYY"></f:convertDateTime>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Cantidad">
+                        <h:outputText value="#{item.cantidad}"></h:outputText>
+                    </p:column>
+                    <p:column headerText="Id Cliente">
+                        <h:outputText value="#{item.idCliente.nombres}"></h:outputText>
+                    </p:column>
+                    <p:column headerText="Id Producto">
+                        <h:outputText value="#{item.idProducto.nombre}"></h:outputText>
+                    </p:column>
+                    <p:column headerText="Eliminar">
+                        <p:commandButton value="Eliminar" actionListener="#{managerOrden.eliminarOrden(item)}"
+                                         update=":frmOrden :msj"/>
+                    </p:column>
+                    <p:column headerText="Actualizar">
+                        <p:commandButton value="Actualizar" actionListener="#{managerOrden.cargarDatos(item)}"
+                                         update=":n" oncomplete="PF('wgnew').show();"/>
+                    </p:column>      
+                </p:dataTable>                
+            </p:fieldset>
+
+        </h:form>
+    </h:body>
+</html>
+
